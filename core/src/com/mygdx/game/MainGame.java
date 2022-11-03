@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,7 +33,7 @@ public class MainGame implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         initTile();
-        player = new Character(10, this);
+        player = new Character(100, this);
 
 
     }
@@ -55,10 +56,10 @@ public class MainGame implements Screen {
 
     }
 
-    public void updateTiles(){
-        if((player.getxPos() - (tilesArray.get(0).x + getTileWidth())) > 50   ){
+    public void updateTiles() {
+        if ((player.getxPos() - (tilesArray.get(0).x + getTileWidth())) > 50) {
             tilesArray.remove(0);
-            tilesArray.add(new Rectangle(tilesArray.get(tilesArray.size()-1).x+tileWidth, tileY, tileWidth,tileHeight));
+            tilesArray.add(new Rectangle(tilesArray.get(tilesArray.size() - 1).x + tileWidth, tileY, tileWidth, tileHeight));
         }
     }
 
@@ -71,10 +72,9 @@ public class MainGame implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(135 / 255f, 206 / 255f, 235 / 255f, 1);
-        camera.position.x += 4;
+        camera.position.x += player.getSpeed() * Gdx.graphics.getDeltaTime();
         camera.update();
         platformer.batch.setProjectionMatrix(camera.combined);
-        System.out.println(tilesArray);
         updateTiles();
         platformer.batch.begin();
         for (Rectangle tmp : tilesArray) {
@@ -84,7 +84,9 @@ public class MainGame implements Screen {
 
         platformer.batch.end();
 
-        player.movePlayer();
+        player.checkState();
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && player.getState() == "Grounded")
+            player.setState("Ascending");
 
     }
 
