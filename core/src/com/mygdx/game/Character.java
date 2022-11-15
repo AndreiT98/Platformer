@@ -11,10 +11,7 @@ public class Character {
     Texture charImage;
     private Rectangle player;
     private String state = "Grounded";
-
-
     private float jumpHeight = 20;
-
 
     public Character(int speed, MainGame game) {
         this.speed = speed;
@@ -23,7 +20,6 @@ public class Character {
         player = new Rectangle(50, game.getTileHeight(), 50, 70);
 
     }
-
 
     public void checkState() {
         switch (state) {
@@ -65,7 +61,6 @@ public class Character {
     public Rectangle getPlayer() {
         return player;
     }
-
 
     public Texture getCharImage() {
         return charImage;

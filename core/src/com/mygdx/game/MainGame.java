@@ -3,13 +3,12 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-
 import java.util.ArrayList;
 
 public class MainGame implements Screen {
@@ -17,32 +16,20 @@ public class MainGame implements Screen {
     private final int screenWidth = Gdx.graphics.getWidth();
     private final int screenHeight = Gdx.graphics.getHeight();
     private final int tileY = 0;
-
     private Platformer platformer;
     private Texture tileImage;
-
     public OrthographicCamera getCamera() {
         return camera;
     }
-
     private OrthographicCamera camera;
-
     public Character getPlayer() {
         return player;
     }
-
     private Character player;
     private Obstacle obstacle;
-
+    private String state;
     private int tileWidth;
     private int tileHeight;
-    private BitmapFont font = new BitmapFont();
-
-
-    public ArrayList<Rectangle> getTilesArray() {
-        return tilesArray;
-    }
-
     private ArrayList<Rectangle> tilesArray = new ArrayList<>();
 
 
@@ -53,8 +40,8 @@ public class MainGame implements Screen {
         initTile();
         player = new Character(350, this);
         obstacle = new Obstacle(this);
-        font.getData().setScale(1,1.5F);
-
+        platformer.font.getData().setScale(1,1.5F);
+        setState("Playing");
 
     }
 
@@ -81,16 +68,20 @@ public class MainGame implements Screen {
         }
     }
 
+    public void checkResume(){
+        if(Gdx.input.isKeyPressed(Input.Keys.R)){
+            setState("Playing");
+        }
+    }
+
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(135 / 255f, 206 / 255f, 235 / 255f, 1);
-        camera.position.x += player.getSpeed() * Gdx.graphics.getDeltaTime();
         camera.update();
         platformer.batch.setProjectionMatrix(camera.combined);
         updateTiles();
-        if(TimeUtils.nanoTime() - obstacle.getLastSpawnTime() > 400000000 ) obstacle.manageObstacles();
-
+        System.out.println(Gdx.graphics.getFramesPerSecond());
 
         platformer.batch.begin();
         for (Rectangle tmp : tilesArray) {
@@ -100,16 +91,42 @@ public class MainGame implements Screen {
         for(Rectangle tmp: obstacle.getObstacles()){
             platformer.batch.draw(obstacle.getObstacleImage(), tmp.x,tmp.y,tmp.width,tmp.height);
         }
-        font.draw(platformer.batch, "Score: " + obstacle.getScore(), camera.position.x+500, Gdx.graphics.getHeight()-25);
-
         platformer.batch.end();
 
-        player.checkState();
-        obstacle.checkCollision();
-        System.out.println(Gdx.graphics.getFramesPerSecond());
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+            setState("Pause");
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && player.getState() == "Grounded")
-            player.setState("Ascending");
+        switch (state){
+            case "Playing":
+                platformer.batch.begin();
+                platformer.font.draw(platformer.batch, "Score: " + obstacle.getScore(), camera.position.x+500, Gdx.graphics.getHeight()-25);
+                platformer.batch.end();
+                camera.position.x += player.getSpeed() * Gdx.graphics.getDeltaTime();
+                if(TimeUtils.nanoTime() - obstacle.getLastSpawnTime() > 400000000 ) obstacle.manageObstacles();
+                player.checkState();
+                obstacle.checkCollision();
+                if (Gdx.input.isKeyPressed(Input.Keys.UP) && player.getState() == "Grounded")
+                    player.setState("Ascending");
+                break;
+
+
+            case "Game Over":
+                platformer.batch.begin();
+                platformer.font.setColor(Color.BLACK);
+                platformer.font.draw(platformer.batch, "GAME OVER", camera.position.x,camera.position.y);
+                platformer.font.draw(platformer.batch, "FINAL SCORE: " + obstacle.getScore(), camera.position.x, camera.position.y -50);
+                platformer.batch.end();
+                break;
+
+            case "Pause":
+                platformer.batch.begin();
+                platformer.font.draw(platformer.batch, "Game Paused", camera.position.x, camera.position.y);
+                platformer.font.draw(platformer.batch, "Press R to Resume!", camera.position.x,camera.position.y - 50);
+                platformer.batch.end();
+                checkResume();
+
+                break;
+        }
 
     }
 
@@ -121,16 +138,26 @@ public class MainGame implements Screen {
         return tileHeight;
     }
 
+    public ArrayList<Rectangle> getTilesArray() {
+        return tilesArray;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     @Override
     public void dispose() {
         tileImage.dispose();
         player.charImage.dispose();
+        obstacle.getObstacleImage().dispose();
 
     }
 
 
     @Override
     public void show() {
+
 
     }
 
