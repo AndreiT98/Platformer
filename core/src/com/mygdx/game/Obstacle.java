@@ -15,14 +15,7 @@ public class Obstacle {
     private Rectangle obst;
     private float min;
     private float max;
-
-
     private int score;
-
-    public long getLastSpawnTime() {
-        return lastSpawnTime;
-    }
-
     private long lastSpawnTime;
 
     public ArrayList<Rectangle> getObstacles() {
@@ -31,10 +24,6 @@ public class Obstacle {
 
     private ArrayList<Rectangle> obstacles = new ArrayList<>();
 
-
-    public Texture getObstacleImage() {
-        return obstacleImage;
-    }
 
     public Obstacle(MainGame game) {
         this.game = game;
@@ -65,21 +54,28 @@ public class Obstacle {
         max = min + 200;
         lastSpawnTime = TimeUtils.nanoTime();
 
-        if(obstacles.get(0).x < (game.getCamera().position.x - 600)){
+        if (obstacles.get(0).x < (game.getCamera().position.x - 600)) {
             obstacles.remove(0);
             score++;
 
         }
     }
 
-    public void checkCollision(){
-        if(obstacles.get(0).overlaps(game.getPlayer().getPlayer())){
-
+    public void checkCollision() {
+        if (obstacles.get(0).overlaps(game.getPlayer().getPlayer())) {
+            game.setState("Game Over");
         }
     }
 
     public int getScore() {
         return score;
+    }
+    public long getLastSpawnTime() {
+        return lastSpawnTime;
+    }
+
+    public Texture getObstacleImage() {
+        return obstacleImage;
     }
 
 }

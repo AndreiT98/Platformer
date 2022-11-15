@@ -35,6 +35,7 @@ public class MainMenu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 platformer.setScreen(new MainGame(platformer));
+                Gdx.input.setInputProcessor(null);
             }
         });
 
