@@ -9,7 +9,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setWindowedMode(1200,800);
 		config.setForegroundFPS(60);
-		config.useVsync(true);
+		config.useVsync(false);
 		config.setTitle("Platformer");
 		new Lwjgl3Application(new Platformer(), config);
 	}

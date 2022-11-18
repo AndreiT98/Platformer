@@ -7,8 +7,10 @@ import com.badlogic.gdx.math.Rectangle;
 public class Character {
 
     private final float speed;
+    private final int playerWidth = 50;
+    private final int playerHeight = 70;
     private MainGame game;
-    Texture charImage;
+    private Texture charImage;
     private Rectangle player;
     private String state = "Grounded";
     private float jumpHeight = 20;
@@ -16,11 +18,12 @@ public class Character {
     public Character(int speed, MainGame game) {
         this.speed = speed;
         this.game = game;
-        charImage = new Texture(Gdx.files.internal("character_0006.png"));
-        player = new Rectangle(50, game.getTileHeight(), 50, 70);
+        charImage = new Texture(Gdx.files.internal("charSkin.png"));
+        player = new Rectangle(50, game.getTileHeight(), playerWidth, playerHeight);
 
     }
 
+    //Method checks the State of the Player and handles the walking/jumping animation based on it's state
     public void checkState() {
         switch (state) {
             case "Grounded":
